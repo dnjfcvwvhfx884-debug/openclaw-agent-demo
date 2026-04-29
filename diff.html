@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="style.css">
+<style>
+.add{color:green}
+.del{color:red}
+</style>
+</head>
+
+<body>
+
+<div style="display:flex">
+<div class="sidebar">
+<a href="/">Dashboard</a>
+<a href="/diff.html">Diff</a>
+</div>
+
+<div style="padding:20px">
+
+<h1>PR Diff</h1>
+
+<div class="card">
+<div class="del">- SELECT * FROM user WHERE id="+id</div>
+<div class="add">+ SELECT * FROM user WHERE id = ?</div>
+</div>
+
+</div>
+</div>
+
+</body>
+</html>
