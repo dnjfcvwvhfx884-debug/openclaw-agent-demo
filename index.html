@@ -1,117 +1,128 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>OpenClaw Agent Pro</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<meta charset="UTF-8">
+<title>OpenClaw Enterprise</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
 <body class="bg-gray-100">
 
-<div class="max-w-6xl mx-auto p-6">
+<div class="flex h-screen">
 
-  <!-- 标题 -->
-  <h1 class="text-3xl font-bold mb-2">🚀 OpenClaw 自动化重构 Agent</h1>
-  <p class="text-gray-500 mb-6">项目编号：OC-AGENT-REFAC-2025-001</p >
-
-  <!-- 指标卡片 -->
-  <div class="grid grid-cols-4 gap-4 mb-8">
-    <div class="bg-white p-4 rounded shadow hover:scale-105 transition">
-      <p class="text-sm text-gray-500">日均 Token</p >
-      <p class="text-xl font-bold">5,000,000</p >
-    </div>
-    <div class="bg-white p-4 rounded shadow hover:scale-105 transition">
-      <p class="text-sm text-gray-500">扫描文件</p >
-      <p class="text-xl font-bold">152,342</p >
-    </div>
-    <div class="bg-white p-4 rounded shadow hover:scale-105 transition">
-      <p class="text-sm text-gray-500">生成 PR</p >
-      <p class="text-xl font-bold">12 / 天</p >
-    </div>
-    <div class="bg-white p-4 rounded shadow hover:scale-105 transition">
-      <p class="text-sm text-gray-500">效率提升</p >
-      <p class="text-xl font-bold text-green-600">+80%</p >
-    </div>
+  <!-- 侧边栏 -->
+  <div class="w-64 bg-black text-white p-4">
+    <h2 class="text-xl font-bold mb-6">OpenClaw</h2>
+    <ul>
+      <li class="mb-3 cursor-pointer" onclick="showPage('dashboard')">📊 Dashboard</li>
+      <li class="mb-3 cursor-pointer" onclick="showPage('logs')">🧠 Agent Logs</li>
+      <li class="mb-3 cursor-pointer" onclick="showPage('pr')">📄 PR Center</li>
+      <li class="mb-3 cursor-pointer" onclick="showPage('settings')">⚙️ Settings</li>
+    </ul>
   </div>
 
-  <!-- 图表 -->
-  <div class="grid grid-cols-2 gap-6 mb-8">
-    <div class="bg-white p-4 rounded shadow">
-      <h2 class="mb-2 font-semibold">Token 使用趋势</h2>
-      <canvas id="lineChart"></canvas>
-    </div>
-    <div class="bg-white p-4 rounded shadow">
-      <h2 class="mb-2 font-semibold">问题类型分布</h2>
-      <canvas id="pieChart"></canvas>
-    </div>
-  </div>
+  <!-- 主区域 -->
+  <div class="flex-1 p-6 overflow-auto">
 
-  <!-- 工作流 -->
-  <div class="bg-white p-6 rounded shadow mb-8">
-    <h2 class="text-xl font-semibold mb-4">Agent 工作流</h2>
-    <div class="flex justify-between items-center text-center">
-      <div class="animate-pulse">代码扫描</div>
-      <div>→</div>
-      <div class="animate-pulse">规范分析</div>
-      <div>→</div>
-      <div class="animate-pulse">生成 PR</div>
-      <div>→</div>
-      <div class="animate-pulse">自动测试</div>
-      <div>→</div>
-      <div class="animate-pulse">结果反馈</div>
+    <!-- Dashboard -->
+    <div id="dashboard">
+      <h1 class="text-2xl font-bold mb-4">🚀 Dashboard</h1>
+
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded shadow">Token<br><b>5,000,000</b></div>
+        <div class="bg-white p-4 rounded shadow">扫描文件<br><b>152,342</b></div>
+        <div class="bg-white p-4 rounded shadow">PR<br><b>12/天</b></div>
+        <div class="bg-white p-4 rounded shadow text-green-600">+80%</div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-white p-4 rounded shadow">
+          <canvas id="lineChart"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
     </div>
-  </div>
 
-  <!-- 日志 -->
-  <div class="bg-black text-green-400 p-4 rounded font-mono text-sm h-40 overflow-hidden">
-    <div id="log"></div>
-  </div>
+    <!-- Logs -->
+    <div id="logs" class="hidden">
+      <h1 class="text-2xl font-bold mb-4">🧠 Agent Logs</h1>
+      <div class="bg-black text-green-400 p-4 h-64 overflow-auto font-mono" id="logBox"></div>
+    </div>
 
+    <!-- PR Center -->
+    <div id="pr" class="hidden">
+      <h1 class="text-2xl font-bold mb-4">📄 PR Center</h1>
+
+      <div class="bg-white p-4 rounded shadow mb-3">
+        ✔ Refactor service layer | 状态：Merged | 2 mins ago
+      </div>
+      <div class="bg-white p-4 rounded shadow mb-3">
+        ✔ Fix naming convention | 状态：Merged | 5 mins ago
+      </div>
+      <div class="bg-white p-4 rounded shadow mb-3">
+        ⏳ Optimize query performance | 状态：Running
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings" class="hidden">
+      <h1 class="text-2xl font-bold mb-4">⚙️ Settings</h1>
+      <div class="bg-white p-4 rounded shadow">
+        Agent Version: v1.3.2<br>
+        Mode: Auto Refactor<br>
+        Status: <span class="text-green-600">Active</span>
+      </div>
+    </div>
+
+  </div>
 </div>
 
 <script>
-// 动态日志动画
+// 页面切换
+function showPage(page) {
+  ['dashboard','logs','pr','settings'].forEach(id=>{
+    document.getElementById(id).classList.add('hidden');
+  });
+  document.getElementById(page).classList.remove('hidden');
+}
+
+// 日志流
 const logs = [
-  "[INFO] Agent Started",
-  "[INFO] Scanning repository...",
-  "[INFO] Issues found: 342",
-  "[INFO] Generating PR...",
-  "[INFO] Running tests...",
-  "[INFO] All tests passed ✔"
+  "Agent Started...",
+  "Scanning repo...",
+  "Issues found: 342",
+  "Generating PR...",
+  "Running tests...",
+  "All tests passed ✔"
 ];
 
-let i = 0;
-function addLog() {
-  if (i < logs.length) {
-    document.getElementById("log").innerHTML += logs[i] + "<br>";
+let i=0;
+function streamLogs(){
+  if(i<logs.length){
+    document.getElementById("logBox").innerHTML += logs[i]+"<br>";
     i++;
-    setTimeout(addLog, 800);
+    setTimeout(streamLogs,700);
   }
 }
-addLog();
+streamLogs();
 
-// 折线图
+// 图表
 new Chart(document.getElementById('lineChart'), {
-  type: 'line',
-  data: {
-    labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-    datasets: [{
-      label: 'Token 使用量',
-      data: [300,500,800,1200,1800,2200,2600],
-      borderWidth: 2
-    }]
+  type:'line',
+  data:{
+    labels:['Mon','Tue','Wed','Thu','Fri'],
+    datasets:[{data:[200,400,800,1200,2000]}]
   }
 });
 
-// 饼图
 new Chart(document.getElementById('pieChart'), {
-  type: 'pie',
-  data: {
-    labels: ['代码规范','性能优化','架构问题','安全问题'],
-    datasets: [{
-      data: [45,25,20,10]
-    }]
+  type:'pie',
+  data:{
+    labels:['规范','性能','架构','安全'],
+    datasets:[{data:[40,30,20,10]}]
   }
 });
 </script>
