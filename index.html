@@ -2,111 +2,132 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>OpenClaw AI Platform</title>
+<title>OpenClaw AI - Pitch</title>
 <script src="https://cdn.tailwindcss.com"></script>
 
 <style>
-.diff-add { background:#e6ffed;color:#22863a; }
-.diff-del { background:#ffeef0;color:#cb2431; }
 .fade { animation: fadeIn 1s ease-in; }
 @keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 </style>
 </head>
 
-<body class="bg-gray-900 text-white">
+<body class="bg-black text-white">
 
 <div class="max-w-5xl mx-auto p-6">
 
-<!-- 标题 -->
-<h1 class="text-4xl font-bold mb-2 fade">🚀 OpenClaw AI 重构系统</h1>
-<p class="text-gray-400 mb-6 fade">
-自动扫描代码 → 生成 PR → 自动测试 → 完整闭环
+<!-- HERO -->
+<h1 class="text-5xl font-bold mb-4 fade">
+🚀 OpenClaw AI
+</h1>
+
+<p class="text-xl text-gray-400 mb-6 fade">
+让代码重构从“人工成本”，变成“自动化基础设施”
 </p >
 
-<!-- 数据 -->
-<div class="grid grid-cols-4 gap-4 mb-6 text-center">
-  <div class="bg-gray-800 p-4 rounded">Token<br><b id="token">5000000</b></div>
-  <div class="bg-gray-800 p-4 rounded">文件<br><b id="files">150000</b></div>
-  <div class="bg-gray-800 p-4 rounded">PR<br><b id="pr">10</b></div>
-  <div class="bg-gray-800 p-4 rounded text-green-400">成功率<br><b>100%</b></div>
+<!-- 痛点 -->
+<div class="mb-10">
+<h2 class="text-2xl font-bold mb-3">❗ 问题</h2>
+<p class="text-gray-400">
+企业代码库中存在大量技术债，依赖人工重构效率低、不可持续，严重影响开发效率与系统稳定性。
+</p >
 </div>
 
-<!-- AI思考 -->
-<div class="bg-black p-4 rounded mb-6 font-mono text-green-400 h-40 overflow-auto" id="thinking"></div>
+<!-- 解决方案 -->
+<div class="mb-10">
+<h2 class="text-2xl font-bold mb-3">💡 解决方案</h2>
+<p class="text-gray-400">
+OpenClaw AI 自动扫描代码 → 识别问题 → 生成PR → 自动测试，实现闭环代码重构。
+</p >
+</div>
 
-<!-- Diff -->
-<div class="bg-white text-black p-4 rounded font-mono text-sm" id="diff"></div>
+<!-- Traction -->
+<div class="mb-10">
+<h2 class="text-2xl font-bold mb-3">📊 Traction</h2>
 
-<div class="mt-4 text-green-400 font-semibold" id="result"></div>
+<div class="grid grid-cols-3 gap-4 text-center">
+  <div class="bg-gray-800 p-4 rounded">
+    Token / 天<br><b>5,000,000</b>
+  </div>
+  <div class="bg-gray-800 p-4 rounded">
+    团队规模<br><b>20人</b>
+  </div>
+  <div class="bg-gray-800 p-4 rounded text-green-400">
+    效率提升<br><b>+80%</b>
+  </div>
+</div>
+</div>
+
+<!-- 产品演示 -->
+<div class="mb-10">
+<h2 class="text-2xl font-bold mb-3">🧠 产品演示</h2>
+
+<div class="bg-gray-900 p-4 rounded font-mono text-green-400 h-40 overflow-auto" id="demo"></div>
+</div>
+
+<!-- 市场 -->
+<div class="mb-10">
+<h2 class="text-2xl font-bold mb-3">📈 市场机会</h2>
+
+<p class="text-gray-400">
+开发者工具市场规模超过 $50B，AI工程化正在成为新基础设施。
+代码自动化重构将成为标配能力。
+</p >
+
+<div class="mt-4">
+TAM：$50B+<br>
+SAM：$10B（企业开发工具）<br>
+SOM：$500M（AI代码优化细分市场）
+</div>
+</div>
+
+<!-- 商业模式 -->
+<div class="mb-10">
+<h2 class="text-2xl font-bold mb-3">💰 商业模式</h2>
+
+<ul class="text-gray-400">
+<li>• 按 Token 收费（使用量驱动）</li>
+<li>• 按仓库订阅（$49 / repo / 月）</li>
+<li>• 企业私有部署（$10K+ / 年）</li>
+</ul>
+</div>
+
+<!-- 未来 -->
+<div class="mb-10">
+<h2 class="text-2xl font-bold mb-3">🚀 未来扩展</h2>
+
+<p class="text-gray-400">
+自动 Code Review、自动测试生成、自动修复 Bug，构建完整 AI DevOps 平台。
+</p >
+</div>
+
+<!-- CTA -->
+<div class="text-center mt-10">
+<p class="text-xl">我们正在构建下一代 AI 开发基础设施</p >
+</div>
 
 </div>
 
 <script>
 
-// AI思考流程
-const thoughts = [
-"🔍 正在扫描仓库结构...",
-"📊 发现技术债：SQL 拼接风险",
-"🧠 推理：可能导致 SQL 注入",
-"⚙️ 生成安全重构方案",
-"🧪 运行测试验证...",
-"✅ 测试通过，生成 PR"
+const steps = [
+"扫描代码库...",
+"检测技术债...",
+"分析重构方案...",
+"生成PR...",
+"运行测试...",
+"完成 ✔"
 ];
 
-let t = 0;
-
-function runThinking(){
-  if(t < thoughts.length){
-    document.getElementById("thinking").innerHTML += thoughts[t] + "<br>";
-    t++;
-    setTimeout(runThinking, 900);
-  } else {
-    setTimeout(runDiff, 800);
-  }
-}
-
-// Diff动画
-const diffLines = [
-'- return db.query("SELECT name FROM user WHERE id="+id);',
-'+ String sql = "SELECT name FROM user WHERE id = ?";',
-'+ return db.queryPrepared(sql, id);'
-];
-
-let d = 0;
-
-function runDiff(){
-  function add(){
-    if(d < diffLines.length){
-      let line = diffLines[d];
-      let div = document.createElement("div");
-      div.className = line.startsWith('+') ? 'diff-add' : 'diff-del';
-      div.innerText = line;
-      document.getElementById("diff").appendChild(div);
-      d++;
-      setTimeout(add, 700);
-    } else {
-      document.getElementById("result").innerText =
-        "✔ AI已完成重构：修复SQL注入风险（参数化查询）";
-      growData();
-    }
-  }
-  add();
-}
-
-// 数据增长
-function growData(){
-  let pr = document.getElementById("pr");
-  let val = parseInt(pr.innerText);
-  let i=0;
-  let timer = setInterval(()=>{
-    pr.innerText = val + i;
+let i=0;
+function runDemo(){
+  if(i<steps.length){
+    document.getElementById("demo").innerHTML += steps[i]+"<br>";
     i++;
-    if(i>5) clearInterval(timer);
-  },300);
+    setTimeout(runDemo,800);
+  }
 }
 
-// 自动启动（关键！）
-setTimeout(runThinking, 1000);
+setTimeout(runDemo,1000);
 
 </script>
 
