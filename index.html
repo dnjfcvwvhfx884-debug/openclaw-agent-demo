@@ -2,3 +2,82 @@
 <a href="/logs.html">Logs</a>
 <a href="/pr.html">PR</a>
 <a href="/api.html">API</a>
+<head>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .spinner {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 50px;
+      height: 50px;
+      animation: spin 1s linear infinite;
+      margin-top: 20px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+<div class="max-w-6xl mx-auto p-6">
+  <h1 class="text-5xl font-bold mb-4 fade">🚀 OpenClaw AI</h1>
+  <p class="text-xl text-gray-400 mb-6 fade">
+    让代码重构从“人工成本”，变成“自动化基础设施”
+  </p>
+
+  <!-- Data and Loading Spinner -->
+  <div class="card mb-6">
+    <button class="btn" onclick="startTasks()">开始自动重构</button>
+    <p id="status"></p>
+    <div id="spinner" class="spinner" style="display:none;"></div>
+  </div>
+
+  <!-- Logs -->
+  <div id="log" class="card"></div>
+</div>
+
+<script>
+  // Fetch data from simulated API
+  function fakeAPI(taskName) {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(`${taskName} completed`);
+      }, Math.random() * 2000 + 1000);  // Random delay between 1 to 3 seconds
+    });
+  }
+
+  // Display Spinner and start tasks
+  async function startTasks() {
+    document.getElementById("status").innerText = "Running tasks...";
+    document.getElementById("spinner").style.display = "block";  // Show spinner
+
+    // Simulate multiple concurrent tasks using Promise.all
+    const tasks = [
+      fakeAPI('Scanning Repository'),
+      fakeAPI('Analyzing Code'),
+      fakeAPI('Generating PR'),
+      fakeAPI('Running Tests')
+    ];
+
+    const results = await Promise.all(tasks);  // Run tasks concurrently
+
+    // Update status after all tasks complete
+    document.getElementById("status").innerText = results.join("\n");
+    document.getElementById("spinner").style.display = "none";  // Hide spinner
+    logResults(results);
+  }
+
+  // Log results
+  function logResults(results) {
+    let logText = '';
+    results.forEach(result => {
+      logText += `<div>${result}</div>`;
+    });
+    document.getElementById("log").innerHTML = logText;
+  }
+</script>
+
+</body>
