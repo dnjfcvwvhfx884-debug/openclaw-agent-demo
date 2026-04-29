@@ -1,159 +1,131 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-  <meta charset="UTF-8">
-  <title>OpenClaw AI</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <style>
-    /* Spinner */
-    .spinner {
-      border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      animation: spin 1s linear infinite;
-      margin-top: 20px;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
-
-    /* Progress bar styles */
-    .progress-bar-container {
-      width: 100%;
-      height: 20px;
-      background-color: #f3f3f3;
-      border-radius: 8px;
-      margin-top: 20px;
-    }
-
-    .progress-bar {
-      height: 100%;
-      background-color: #3498db;
-      border-radius: 8px;
-      width: 0%;
-      transition: width 0.5s;
-    }
-
-    /* AI thinking text */
-    .thinking {
-      font-style: italic;
-      color: #fff;
-      font-size: 1.2rem;
-      margin-top: 20px;
-    }
-  </style>
+<meta charset="UTF-8">
+<title>OpenClaw Enterprise</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 
-<body>
-  <div class="max-w-6xl mx-auto p-6">
-    <h1 class="text-5xl font-bold mb-4 fade">🚀 OpenClaw AI</h1>
-    <p class="text-xl text-gray-400 mb-6 fade">
-      让代码重构从“人工成本”，变成“自动化基础设施”
-    </p>
+<body class="bg-gray-100">
 
-    <!-- Task Control -->
-    <div class="card mb-6">
-      <button class="btn" onclick="startTasks()">开始自动重构</button>
-      <p id="status"></p>
+<div class="flex h-screen">
 
-      <!-- Spinner -->
-      <div id="spinner" class="spinner" style="display:none;"></div>
+  <!-- 侧边栏 -->
+  <div class="w-64 bg-black text-white p-4">
+    <h2 class="text-xl font-bold mb-6">OpenClaw</h2>
+    <ul>
+      <li class="mb-3 cursor-pointer" onclick="showPage('dashboard')">📊 Dashboard</li>
+      <li class="mb-3 cursor-pointer" onclick="showPage('logs')">🧠 Agent Logs</li>
+      <li class="mb-3 cursor-pointer" onclick="showPage('pr')">📄 PR Center</li>
+      <li class="mb-3 cursor-pointer" onclick="showPage('settings')">⚙️ Settings</li>
+    </ul>
+  </div>
 
-      <!-- Progress Bar -->
-      <div class="progress-bar-container" style="display:none;">
-        <div id="progress" class="progress-bar"></div>
+  <!-- 主区域 -->
+  <div class="flex-1 p-6 overflow-auto">
+
+    <!-- Dashboard -->
+    <div id="dashboard">
+      <h1 class="text-2xl font-bold mb-4">🚀 Dashboard</h1>
+
+      <div class="grid grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-4 rounded shadow">Token<br><b>5,000,000</b></div>
+        <div class="bg-white p-4 rounded shadow">扫描文件<br><b>152,342</b></div>
+        <div class="bg-white p-4 rounded shadow">PR<br><b>12/天</b></div>
+        <div class="bg-white p-4 rounded shadow text-green-600">+80%</div>
       </div>
-      
-      <!-- AI Thinking Process -->
-      <div id="thinking" class="thinking" style="display:none;"></div>
+
+      <div class="grid grid-cols-2 gap-6">
+        <div class="bg-white p-4 rounded shadow">
+          <canvas id="lineChart"></canvas>
+        </div>
+        <div class="bg-white p-4 rounded shadow">
+          <canvas id="pieChart"></canvas>
+        </div>
+      </div>
     </div>
 
     <!-- Logs -->
-    <div id="log" class="card"></div>
+    <div id="logs" class="hidden">
+      <h1 class="text-2xl font-bold mb-4">🧠 Agent Logs</h1>
+      <div class="bg-black text-green-400 p-4 h-64 overflow-auto font-mono" id="logBox"></div>
+    </div>
+
+    <!-- PR Center -->
+    <div id="pr" class="hidden">
+      <h1 class="text-2xl font-bold mb-4">📄 PR Center</h1>
+
+      <div class="bg-white p-4 rounded shadow mb-3">
+        ✔ Refactor service layer | 状态：Merged | 2 mins ago
+      </div>
+      <div class="bg-white p-4 rounded shadow mb-3">
+        ✔ Fix naming convention | 状态：Merged | 5 mins ago
+      </div>
+      <div class="bg-white p-4 rounded shadow mb-3">
+        ⏳ Optimize query performance | 状态：Running
+      </div>
+    </div>
+
+    <!-- Settings -->
+    <div id="settings" class="hidden">
+      <h1 class="text-2xl font-bold mb-4">⚙️ Settings</h1>
+      <div class="bg-white p-4 rounded shadow">
+        Agent Version: v1.3.2<br>
+        Mode: Auto Refactor<br>
+        Status: <span class="text-green-600">Active</span>
+      </div>
+    </div>
+
   </div>
+</div>
 
-  <script>
-    // Simulate API request
-    function fakeAPI(taskName) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          resolve(`${taskName} completed`);
-        }, Math.random() * 2000 + 1000);  // Random delay between 1 to 3 seconds
-      });
-    }
+<script>
+// 页面切换
+function showPage(page) {
+  ['dashboard','logs','pr','settings'].forEach(id=>{
+    document.getElementById(id).classList.add('hidden');
+  });
+  document.getElementById(page).classList.remove('hidden');
+}
 
-    // Simulate AI thinking process
-    function simulateThinking() {
-      let thinkingTexts = [
-        "AI 正在扫描代码库...",
-        "AI 正在分析代码结构...",
-        "AI 正在识别潜在问题...",
-        "AI 正在生成 PR...",
-        "AI 正在运行自动测试...",
-        "AI 重构任务完成！"
-      ];
-      let i = 0;
-      let thinkingElement = document.getElementById("thinking");
-      thinkingElement.style.display = "block"; // Show thinking process
+// 日志流
+const logs = [
+  "Agent Started...",
+  "Scanning repo...",
+  "Issues found: 342",
+  "Generating PR...",
+  "Running tests...",
+  "All tests passed ✔"
+];
 
-      function displayThinkingText() {
-        if (i < thinkingTexts.length) {
-          thinkingElement.innerText = thinkingTexts[i];
-          i++;
-          setTimeout(displayThinkingText, 2000); // Update every 2 seconds
-        }
-      }
+let i=0;
+function streamLogs(){
+  if(i<logs.length){
+    document.getElementById("logBox").innerHTML += logs[i]+"<br>";
+    i++;
+    setTimeout(streamLogs,700);
+  }
+}
+streamLogs();
 
-      displayThinkingText();
-    }
+// 图表
+new Chart(document.getElementById('lineChart'), {
+  type:'line',
+  data:{
+    labels:['Mon','Tue','Wed','Thu','Fri'],
+    datasets:[{data:[200,400,800,1200,2000]}]
+  }
+});
 
-    // Start tasks (triggered by button click)
-    async function startTasks() {
-      document.getElementById("status").innerText = "Running tasks...";
-      document.getElementById("spinner").style.display = "block";  // Show spinner
-      document.getElementById("progress-bar-container").style.display = "block";  // Show progress bar
-      document.getElementById("progress").style.width = "0%"; // Start from 0%
+new Chart(document.getElementById('pieChart'), {
+  type:'pie',
+  data:{
+    labels:['规范','性能','架构','安全'],
+    datasets:[{data:[40,30,20,10]}]
+  }
+});
+</script>
 
-      // Start thinking animation
-      simulateThinking();
-
-      // Start multiple tasks concurrently
-      const tasks = [
-        fakeAPI('扫描代码库'),
-        fakeAPI('分析代码'),
-        fakeAPI('生成 PR'),
-        fakeAPI('运行测试')
-      ];
-
-      let progress = 0;
-      const updateProgress = setInterval(() => {
-        progress += 25;
-        document.getElementById("progress").style.width = `${progress}%`;
-        if (progress >= 100) clearInterval(updateProgress);  // Stop when it reaches 100%
-      }, 1000);
-
-      const results = await Promise.all(tasks);  // Wait for all tasks to finish
-
-      // Once tasks are completed, update status
-      document.getElementById("status").innerText = results.join("\n");
-      document.getElementById("spinner").style.display = "none";  // Hide spinner
-      document.getElementById("thinking").style.display = "none";  // Hide thinking text
-      logResults(results);
-    }
-
-    // Display task logs
-    function logResults(results) {
-      let logText = '';
-      results.forEach(result => {
-        logText += `<div>${result}</div>`;
-      });
-      document.getElementById("log").innerHTML = logText;
-    }
-  </script>
 </body>
 </html>
