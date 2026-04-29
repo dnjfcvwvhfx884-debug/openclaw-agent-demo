@@ -6,6 +6,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
+    /* Spinner */
     .spinner {
       border: 4px solid #f3f3f3;
       border-top: 4px solid #3498db;
@@ -21,6 +22,7 @@
       100% { transform: rotate(360deg); }
     }
 
+    /* Progress bar styles */
     .progress-bar-container {
       width: 100%;
       height: 20px;
@@ -37,6 +39,7 @@
       transition: width 0.5s;
     }
 
+    /* AI thinking text */
     .thinking {
       font-style: italic;
       color: #fff;
@@ -53,7 +56,7 @@
       让代码重构从“人工成本”，变成“自动化基础设施”
     </p>
 
-    <!-- 任务控制 -->
+    <!-- Task Control -->
     <div class="card mb-6">
       <button class="btn" onclick="startTasks()">开始自动重构</button>
       <p id="status"></p>
@@ -61,12 +64,12 @@
       <!-- Spinner -->
       <div id="spinner" class="spinner" style="display:none;"></div>
 
-      <!-- 进度条 -->
+      <!-- Progress Bar -->
       <div class="progress-bar-container" style="display:none;">
         <div id="progress" class="progress-bar"></div>
       </div>
       
-      <!-- AI 思考过程 -->
+      <!-- AI Thinking Process -->
       <div id="thinking" class="thinking" style="display:none;"></div>
     </div>
 
@@ -75,16 +78,16 @@
   </div>
 
   <script>
-    // 模拟 API 请求
+    // Simulate API request
     function fakeAPI(taskName) {
       return new Promise(resolve => {
         setTimeout(() => {
           resolve(`${taskName} completed`);
-        }, Math.random() * 2000 + 1000);  // 随机延迟
+        }, Math.random() * 2000 + 1000);  // Random delay between 1 to 3 seconds
       });
     }
 
-    // 添加思考过程的模拟动画
+    // Simulate AI thinking process
     function simulateThinking() {
       let thinkingTexts = [
         "AI 正在扫描代码库...",
@@ -96,31 +99,30 @@
       ];
       let i = 0;
       let thinkingElement = document.getElementById("thinking");
-      thinkingElement.style.display = "block";
+      thinkingElement.style.display = "block"; // Show thinking process
 
       function displayThinkingText() {
         if (i < thinkingTexts.length) {
           thinkingElement.innerText = thinkingTexts[i];
           i++;
-          setTimeout(displayThinkingText, 2000);
+          setTimeout(displayThinkingText, 2000); // Update every 2 seconds
         }
       }
 
       displayThinkingText();
     }
 
-    // 启动多个任务并模拟进度
+    // Start tasks (triggered by button click)
     async function startTasks() {
-      // 显示状态信息
       document.getElementById("status").innerText = "Running tasks...";
-      document.getElementById("spinner").style.display = "block";  // 显示加载动画
-      document.getElementById("progress-bar-container").style.display = "block";  // 显示进度条
-      document.getElementById("progress").style.width = "0%"; // 进度条从 0% 开始
+      document.getElementById("spinner").style.display = "block";  // Show spinner
+      document.getElementById("progress-bar-container").style.display = "block";  // Show progress bar
+      document.getElementById("progress").style.width = "0%"; // Start from 0%
 
-      // 启动思考动画
+      // Start thinking animation
       simulateThinking();
 
-      // 启动多个并发任务
+      // Start multiple tasks concurrently
       const tasks = [
         fakeAPI('扫描代码库'),
         fakeAPI('分析代码'),
@@ -132,19 +134,19 @@
       const updateProgress = setInterval(() => {
         progress += 25;
         document.getElementById("progress").style.width = `${progress}%`;
-        if (progress >= 100) clearInterval(updateProgress);  // 当达到 100% 时停止更新
+        if (progress >= 100) clearInterval(updateProgress);  // Stop when it reaches 100%
       }, 1000);
 
-      const results = await Promise.all(tasks);  // 并发执行多个任务
+      const results = await Promise.all(tasks);  // Wait for all tasks to finish
 
-      // 完成任务后更新状态
+      // Once tasks are completed, update status
       document.getElementById("status").innerText = results.join("\n");
-      document.getElementById("spinner").style.display = "none";  // 隐藏加载动画
-      document.getElementById("thinking").style.display = "none";  // 隐藏 AI 思考
+      document.getElementById("spinner").style.display = "none";  // Hide spinner
+      document.getElementById("thinking").style.display = "none";  // Hide thinking text
       logResults(results);
     }
 
-    // 显示日志信息
+    // Display task logs
     function logResults(results) {
       let logText = '';
       results.forEach(result => {
@@ -154,3 +156,4 @@
     }
   </script>
 </body>
+</html>
