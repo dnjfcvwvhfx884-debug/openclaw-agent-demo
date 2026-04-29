@@ -19,65 +19,135 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 20px;
+      background-color: #f3f3f3;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background-color: #3498db;
+      border-radius: 8px;
+      width: 0%;
+      transition: width 0.5s;
+    }
+
+    .thinking {
+      font-style: italic;
+      color: #fff;
+      font-size: 1.2rem;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-<div class="max-w-6xl mx-auto p-6">
-  <h1 class="text-5xl font-bold mb-4 fade">🚀 OpenClaw AI</h1>
-  <p class="text-xl text-gray-400 mb-6 fade">
-    让代码重构从“人工成本”，变成“自动化基础设施”
-  </p>
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-5xl font-bold mb-4 fade">🚀 OpenClaw AI</h1>
+    <p class="text-xl text-gray-400 mb-6 fade">
+      让代码重构从“人工成本”，变成“自动化基础设施”
+    </p>
 
-  <!-- Data and Loading Spinner -->
-  <div class="card mb-6">
-    <button class="btn" onclick="startTasks()">开始自动重构</button>
-    <p id="status"></p>
-    <div id="spinner" class="spinner" style="display:none;"></div>
+    <!-- 任务控制 -->
+    <div class="card mb-6">
+      <button class="btn" onclick="startTasks()">开始自动重构</button>
+      <p id="status"></p>
+
+      <!-- Spinner -->
+      <div id="spinner" class="spinner" style="display:none;"></div>
+
+      <!-- 进度条 -->
+      <div class="progress-bar-container" style="display:none;">
+        <div id="progress" class="progress-bar"></div>
+      </div>
+      
+      <!-- AI 思考过程 -->
+      <div id="thinking" class="thinking" style="display:none;"></div>
+    </div>
+
+    <!-- Logs -->
+    <div id="log" class="card"></div>
   </div>
 
-  <!-- Logs -->
-  <div id="log" class="card"></div>
-</div>
+  <script>
+    // 伪 API 请求模拟
+    function fakeAPI(taskName) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(`${taskName} completed`);
+        }, Math.random() * 2000 + 1000);  // Random delay between 1 to 3 seconds
+      });
+    }
 
-<script>
-  // Fetch data from simulated API
-  function fakeAPI(taskName) {
-    return new Promise(resolve => {
-      setTimeout(() => {
-        resolve(`${taskName} completed`);
-      }, Math.random() * 2000 + 1000);  // Random delay between 1 to 3 seconds
-    });
-  }
+    // 添加思考过程的模拟动画
+    function simulateThinking() {
+      let thinkingTexts = [
+        "AI 正在扫描代码库...",
+        "AI 正在分析代码结构...",
+        "AI 正在识别潜在问题...",
+        "AI 正在生成 PR...",
+        "AI 正在运行自动测试...",
+        "AI 重构任务完成！"
+      ];
+      let i = 0;
+      let thinkingElement = document.getElementById("thinking");
+      thinkingElement.style.display = "block";
 
-  // Display Spinner and start tasks
-  async function startTasks() {
-    document.getElementById("status").innerText = "Running tasks...";
-    document.getElementById("spinner").style.display = "block";  // Show spinner
+      function displayThinkingText() {
+        if (i < thinkingTexts.length) {
+          thinkingElement.innerText = thinkingTexts[i];
+          i++;
+          setTimeout(displayThinkingText, 2000);
+        }
+      }
 
-    // Simulate multiple concurrent tasks using Promise.all
-    const tasks = [
-      fakeAPI('Scanning Repository'),
-      fakeAPI('Analyzing Code'),
-      fakeAPI('Generating PR'),
-      fakeAPI('Running Tests')
-    ];
+      displayThinkingText();
+    }
 
-    const results = await Promise.all(tasks);  // Run tasks concurrently
+    // 启动多个任务并模拟进度
+    async function startTasks() {
+      document.getElementById("status").innerText = "Running tasks...";
+      document.getElementById("spinner").style.display = "block";  // Show spinner
+      document.getElementById("progress-bar-container").style.display = "block";  // Show progress bar
+      document.getElementById("progress").style.width = "0%";
 
-    // Update status after all tasks complete
-    document.getElementById("status").innerText = results.join("\n");
-    document.getElementById("spinner").style.display = "none";  // Hide spinner
-    logResults(results);
-  }
+      // 启动思考动画
+      simulateThinking();
 
-  // Log results
-  function logResults(results) {
-    let logText = '';
-    results.forEach(result => {
-      logText += `<div>${result}</div>`;
-    });
-    document.getElementById("log").innerHTML = logText;
-  }
-</script>
+      // 启动多个并发任务
+      const tasks = [
+        fakeAPI('Scanning Repository'),
+        fakeAPI('Analyzing Code'),
+        fakeAPI('Generating PR'),
+        fakeAPI('Running Tests')
+      ];
 
+      let progress = 0;
+      const updateProgress = setInterval(() => {
+        progress += 25;
+        document.getElementById("progress").style.width = `${progress}%`;
+        if (progress >= 100) clearInterval(updateProgress);  // Stop updating once it's 100%
+      }, 1000);
+
+      const results = await Promise.all(tasks);  // Run tasks concurrently
+
+      // 完成任务后更新状态
+      document.getElementById("status").innerText = results.join("\n");
+      document.getElementById("spinner").style.display = "none";  // Hide spinner
+      document.getElementById("thinking").style.display = "none";  // Hide thinking
+      logResults(results);
+    }
+
+    // 将结果显示在页面上
+    function logResults(results) {
+      let logText = '';
+      results.forEach(result => {
+        logText += `<div>${result}</div>`;
+      });
+      document.getElementById("log").innerHTML = logText;
+    }
+  </script>
 </body>
