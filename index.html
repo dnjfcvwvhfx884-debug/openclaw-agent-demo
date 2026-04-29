@@ -2,129 +2,112 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>OpenClaw Enterprise</title>
+<title>OpenClaw AI Platform</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.diff-add { background:#e6ffed;color:#22863a; }
+.diff-del { background:#ffeef0;color:#cb2431; }
+.fade { animation: fadeIn 1s ease-in; }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
+</style>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-900 text-white">
 
-<div class="flex h-screen">
+<div class="max-w-5xl mx-auto p-6">
 
-  <!-- 侧边栏 -->
-  <div class="w-64 bg-black text-white p-4">
-    <h2 class="text-xl font-bold mb-6">OpenClaw</h2>
-    <ul>
-      <li class="mb-3 cursor-pointer" onclick="showPage('dashboard')">📊 Dashboard</li>
-      <li class="mb-3 cursor-pointer" onclick="showPage('logs')">🧠 Agent Logs</li>
-      <li class="mb-3 cursor-pointer" onclick="showPage('pr')">📄 PR Center</li>
-      <li class="mb-3 cursor-pointer" onclick="showPage('settings')">⚙️ Settings</li>
-    </ul>
-  </div>
+<!-- 标题 -->
+<h1 class="text-4xl font-bold mb-2 fade">🚀 OpenClaw AI 重构系统</h1>
+<p class="text-gray-400 mb-6 fade">
+自动扫描代码 → 生成 PR → 自动测试 → 完整闭环
+</p >
 
-  <!-- 主区域 -->
-  <div class="flex-1 p-6 overflow-auto">
+<!-- 数据 -->
+<div class="grid grid-cols-4 gap-4 mb-6 text-center">
+  <div class="bg-gray-800 p-4 rounded">Token<br><b id="token">5000000</b></div>
+  <div class="bg-gray-800 p-4 rounded">文件<br><b id="files">150000</b></div>
+  <div class="bg-gray-800 p-4 rounded">PR<br><b id="pr">10</b></div>
+  <div class="bg-gray-800 p-4 rounded text-green-400">成功率<br><b>100%</b></div>
+</div>
 
-    <!-- Dashboard -->
-    <div id="dashboard">
-      <h1 class="text-2xl font-bold mb-4">🚀 Dashboard</h1>
+<!-- AI思考 -->
+<div class="bg-black p-4 rounded mb-6 font-mono text-green-400 h-40 overflow-auto" id="thinking"></div>
 
-      <div class="grid grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-4 rounded shadow">Token<br><b>5,000,000</b></div>
-        <div class="bg-white p-4 rounded shadow">扫描文件<br><b>152,342</b></div>
-        <div class="bg-white p-4 rounded shadow">PR<br><b>12/天</b></div>
-        <div class="bg-white p-4 rounded shadow text-green-600">+80%</div>
-      </div>
+<!-- Diff -->
+<div class="bg-white text-black p-4 rounded font-mono text-sm" id="diff"></div>
 
-      <div class="grid grid-cols-2 gap-6">
-        <div class="bg-white p-4 rounded shadow">
-          <canvas id="lineChart"></canvas>
-        </div>
-        <div class="bg-white p-4 rounded shadow">
-          <canvas id="pieChart"></canvas>
-        </div>
-      </div>
-    </div>
+<div class="mt-4 text-green-400 font-semibold" id="result"></div>
 
-    <!-- Logs -->
-    <div id="logs" class="hidden">
-      <h1 class="text-2xl font-bold mb-4">🧠 Agent Logs</h1>
-      <div class="bg-black text-green-400 p-4 h-64 overflow-auto font-mono" id="logBox"></div>
-    </div>
-
-    <!-- PR Center -->
-    <div id="pr" class="hidden">
-      <h1 class="text-2xl font-bold mb-4">📄 PR Center</h1>
-
-      <div class="bg-white p-4 rounded shadow mb-3">
-        ✔ Refactor service layer | 状态：Merged | 2 mins ago
-      </div>
-      <div class="bg-white p-4 rounded shadow mb-3">
-        ✔ Fix naming convention | 状态：Merged | 5 mins ago
-      </div>
-      <div class="bg-white p-4 rounded shadow mb-3">
-        ⏳ Optimize query performance | 状态：Running
-      </div>
-    </div>
-
-    <!-- Settings -->
-    <div id="settings" class="hidden">
-      <h1 class="text-2xl font-bold mb-4">⚙️ Settings</h1>
-      <div class="bg-white p-4 rounded shadow">
-        Agent Version: v1.3.2<br>
-        Mode: Auto Refactor<br>
-        Status: <span class="text-green-600">Active</span>
-      </div>
-    </div>
-
-  </div>
 </div>
 
 <script>
-// 页面切换
-function showPage(page) {
-  ['dashboard','logs','pr','settings'].forEach(id=>{
-    document.getElementById(id).classList.add('hidden');
-  });
-  document.getElementById(page).classList.remove('hidden');
-}
 
-// 日志流
-const logs = [
-  "Agent Started...",
-  "Scanning repo...",
-  "Issues found: 342",
-  "Generating PR...",
-  "Running tests...",
-  "All tests passed ✔"
+// AI思考流程
+const thoughts = [
+"🔍 正在扫描仓库结构...",
+"📊 发现技术债：SQL 拼接风险",
+"🧠 推理：可能导致 SQL 注入",
+"⚙️ 生成安全重构方案",
+"🧪 运行测试验证...",
+"✅ 测试通过，生成 PR"
 ];
 
-let i=0;
-function streamLogs(){
-  if(i<logs.length){
-    document.getElementById("logBox").innerHTML += logs[i]+"<br>";
-    i++;
-    setTimeout(streamLogs,700);
+let t = 0;
+
+function runThinking(){
+  if(t < thoughts.length){
+    document.getElementById("thinking").innerHTML += thoughts[t] + "<br>";
+    t++;
+    setTimeout(runThinking, 900);
+  } else {
+    setTimeout(runDiff, 800);
   }
 }
-streamLogs();
 
-// 图表
-new Chart(document.getElementById('lineChart'), {
-  type:'line',
-  data:{
-    labels:['Mon','Tue','Wed','Thu','Fri'],
-    datasets:[{data:[200,400,800,1200,2000]}]
-  }
-});
+// Diff动画
+const diffLines = [
+'- return db.query("SELECT name FROM user WHERE id="+id);',
+'+ String sql = "SELECT name FROM user WHERE id = ?";',
+'+ return db.queryPrepared(sql, id);'
+];
 
-new Chart(document.getElementById('pieChart'), {
-  type:'pie',
-  data:{
-    labels:['规范','性能','架构','安全'],
-    datasets:[{data:[40,30,20,10]}]
+let d = 0;
+
+function runDiff(){
+  function add(){
+    if(d < diffLines.length){
+      let line = diffLines[d];
+      let div = document.createElement("div");
+      div.className = line.startsWith('+') ? 'diff-add' : 'diff-del';
+      div.innerText = line;
+      document.getElementById("diff").appendChild(div);
+      d++;
+      setTimeout(add, 700);
+    } else {
+      document.getElementById("result").innerText =
+        "✔ AI已完成重构：修复SQL注入风险（参数化查询）";
+      growData();
+    }
   }
-});
+  add();
+}
+
+// 数据增长
+function growData(){
+  let pr = document.getElementById("pr");
+  let val = parseInt(pr.innerText);
+  let i=0;
+  let timer = setInterval(()=>{
+    pr.innerText = val + i;
+    i++;
+    if(i>5) clearInterval(timer);
+  },300);
+}
+
+// 自动启动（关键！）
+setTimeout(runThinking, 1000);
+
 </script>
 
 </body>
