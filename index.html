@@ -2,162 +2,131 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>OpenClaw AI Refactor System</title>
+<title>OpenClaw AI Platform</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+.fade { animation: fadeIn 1s ease-in; }
+@keyframes fadeIn { from {opacity:0;} to {opacity:1;} }
 .diff-add { background:#e6ffed;color:#22863a; }
 .diff-del { background:#ffeef0;color:#cb2431; }
-.blink { animation: blink 1s infinite; }
-@keyframes blink { 50% { opacity: 0; } }
 </style>
 </head>
 
-<body class="bg-gray-100">
+<body class="bg-gray-900 text-white">
 
-<div class="flex h-screen">
+<div class="max-w-6xl mx-auto p-6">
 
-<!-- Sidebar -->
-<div class="w-64 bg-black text-white p-4">
-  <h2 class="text-xl font-bold mb-6">OpenClaw AI</h2>
-  <ul>
-    <li onclick="showPage('dashboard')" class="mb-3 cursor-pointer">📊 Dashboard</li>
-    <li onclick="showPage('ai')" class="mb-3 cursor-pointer">🧠 AI Engine</li>
-    <li onclick="showPage('diff')" class="mb-3 cursor-pointer">🔍 PR Diff</li>
-  </ul>
-</div>
+<!-- HERO -->
+<h1 class="text-4xl font-bold mb-2 fade">
+🚀 OpenClaw AI 自动代码重构平台
+</h1>
+<p class="text-gray-400 mb-6 fade">
+让 AI 自动扫描技术债 → 生成 PR → 自动测试 → 持续优化代码质量
+</p>
 
-<!-- Main -->
-<div class="flex-1 p-6">
-
-<!-- Dashboard -->
-<div id="dashboard">
-<h1 class="text-2xl font-bold mb-4">🚀 系统总览</h1>
-
-<div class="grid grid-cols-4 gap-4 mb-6">
-  <div class="bg-white p-4 rounded shadow">
-    Token<br><b id="token">5,000,000</b>
+<!-- KPI -->
+<div class="grid grid-cols-4 gap-4 mb-8 text-center">
+  <div class="bg-gray-800 p-4 rounded">
+    日均Token<br><b id="token">5,000,000</b>
   </div>
-  <div class="bg-white p-4 rounded shadow">
-    扫描文件<br><b id="files">152,342</b>
+  <div class="bg-gray-800 p-4 rounded">
+    覆盖代码量<br><b>150万行+</b>
   </div>
-  <div class="bg-white p-4 rounded shadow">
-    PR 数量<br><b id="prCount">12</b>
+  <div class="bg-gray-800 p-4 rounded">
+    团队规模<br><b>20人</b>
   </div>
-  <div class="bg-white p-4 rounded shadow text-green-600">
-    成功率<br><b>100%</b>
+  <div class="bg-gray-800 p-4 rounded text-green-400">
+    效率提升<br><b>+80%</b>
   </div>
 </div>
 
-<button onclick="startDemo()" class="bg-black text-white px-4 py-2 rounded">
-▶ 开始自动重构演示
-</button>
+<!-- AI DEMO -->
+<div class="bg-black p-4 rounded mb-6 font-mono text-green-400 h-40 overflow-auto" id="thinking"></div>
 
+<div class="bg-white text-black p-4 rounded font-mono text-sm" id="diff"></div>
+
+<div class="mt-4 text-green-400 font-semibold" id="result"></div>
+
+<!-- 商业模式 -->
+<div class="mt-10">
+<h2 class="text-2xl font-bold mb-4">💰 商业模式</h2>
+
+<div class="grid grid-cols-3 gap-4 text-center">
+  <div class="bg-gray-800 p-4 rounded">
+    按Token收费<br><b>$0.002 / 1K Token</b>
+  </div>
+  <div class="bg-gray-800 p-4 rounded">
+    按仓库订阅<br><b>$49 / repo / 月</b>
+  </div>
+  <div class="bg-gray-800 p-4 rounded">
+    企业私有部署<br><b>$10K / 年</b>
+  </div>
+</div>
 </div>
 
-<!-- AI Engine -->
-<div id="ai" class="hidden">
-<h1 class="text-2xl font-bold mb-4">🧠 AI 正在分析代码</h1>
-
-<div class="bg-black text-green-400 p-4 font-mono h-64" id="aiLog">
-<span class="blink">▋</span>
-</div>
-</div>
-
-<!-- Diff -->
-<div id="diff" class="hidden">
-<h1 class="text-2xl font-bold mb-4">🔍 自动生成 PR Diff</h1>
-
-<div class="bg-white p-4 rounded shadow font-mono text-sm" id="diffBox"></div>
-
-<div class="mt-4 text-green-600 font-semibold" id="diffExplain"></div>
+<!-- 增长 -->
+<div class="mt-10">
+<h2 class="text-2xl font-bold mb-4">📈 增长潜力</h2>
+<p class="text-gray-400">
+开发者工具市场 + AI工程化正在爆发，代码自动化重构将成为标配。
+未来可扩展至自动修复、自动Review、自动测试生成等方向。
+</p>
 </div>
 
-</div>
 </div>
 
 <script>
 
-// 页面切换
-function showPage(p){
-  ['dashboard','ai','diff'].forEach(id=>{
-    document.getElementById(id).classList.add('hidden');
-  });
-  document.getElementById(p).classList.remove('hidden');
-}
-
-// AI日志流
-const aiSteps = [
-"加载代码仓库...",
-"扫描文件结构...",
-"检测代码异味...",
-"发现 SQL 拼接风险...",
-"分析优化方案...",
-"生成重构代码..."
+// AI思考
+const thoughts = [
+"扫描代码仓库...",
+"检测技术债...",
+"发现SQL注入风险",
+"生成重构方案",
+"运行测试...",
+"测试通过，生成PR"
 ];
 
-let step = 0;
-
-function runAI(){
-  if(step < aiSteps.length){
-    document.getElementById("aiLog").innerHTML += aiSteps[step] + "<br>";
-    step++;
-    setTimeout(runAI, 800);
+let t=0;
+function runThinking(){
+  if(t<thoughts.length){
+    document.getElementById("thinking").innerHTML += thoughts[t]+"<br>";
+    t++;
+    setTimeout(runThinking,800);
   } else {
-    setTimeout(showDiff, 1000);
+    setTimeout(runDiff,800);
   }
 }
 
-// Diff逐行生成
+// Diff
 const diffLines = [
 '- return db.query("SELECT name FROM user WHERE id="+id);',
 '+ String sql = "SELECT name FROM user WHERE id = ?";',
 '+ return db.queryPrepared(sql, id);'
 ];
 
-let d = 0;
-
-function showDiff(){
-  showPage('diff');
-  function addLine(){
-    if(d < diffLines.length){
-      let line = diffLines[d];
-      let div = document.createElement("div");
-      div.className = line.startsWith('+') ? 'diff-add' : 'diff-del';
-      div.innerText = line;
-      document.getElementById("diffBox").appendChild(div);
+let d=0;
+function runDiff(){
+  function add(){
+    if(d<diffLines.length){
+      let line=diffLines[d];
+      let div=document.createElement("div");
+      div.className=line.startsWith('+')?'diff-add':'diff-del';
+      div.innerText=line;
+      document.getElementById("diff").appendChild(div);
       d++;
-      setTimeout(addLine, 700);
+      setTimeout(add,600);
     } else {
-      document.getElementById("diffExplain").innerText =
-        "✔ AI自动修复 SQL 注入风险，使用参数化查询";
-      increaseMetrics();
+      document.getElementById("result").innerText =
+      "✔ AI完成重构：修复SQL注入风险";
     }
   }
-  addLine();
+  add();
 }
 
-// 数据增长动画
-function increaseMetrics(){
-  let pr = document.getElementById("prCount");
-  let count = parseInt(pr.innerText);
-  let i = 0;
-  let timer = setInterval(()=>{
-    pr.innerText = count + i;
-    i++;
-    if(i>3) clearInterval(timer);
-  },300);
-}
-
-// 一键启动
-function startDemo(){
-  showPage('ai');
-  document.getElementById("aiLog").innerHTML="";
-  step=0;
-  d=0;
-  runAI();
-}
+// 自动播放
+setTimeout(runThinking,1000);
 
 </script>
 
