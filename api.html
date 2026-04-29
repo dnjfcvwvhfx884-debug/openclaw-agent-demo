@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head><link rel="stylesheet" href="style.css"></head>
+<body>
+
+<div style="padding:20px">
+<h1>API 状态</h1>
+
+<pre id="json"></pre>
+</div>
+
+<script>
+setTimeout(()=>{
+  document.getElementById("json").innerText = JSON.stringify({
+    status:"ok",
+    agent:"running",
+    tasks:12
+  },null,2);
+},1000);
+</script>
+
+</body>
+</html>
