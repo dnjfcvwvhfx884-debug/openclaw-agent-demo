@@ -1,0 +1,5 @@
+body { font-family: Arial; background:#0f172a; color:white; }
+.card { background:#1e293b; padding:16px; border-radius:8px; }
+.btn { background:black; color:white; padding:8px 16px; cursor:pointer; }
+.sidebar { width:200px; background:black; height:100vh; padding:20px; }
+a { display:block; margin:10px 0; color:white; text-decoration:none; }
