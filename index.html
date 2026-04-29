@@ -2,129 +2,163 @@
 <html lang="zh">
 <head>
 <meta charset="UTF-8">
-<title>OpenClaw Enterprise</title>
+<title>OpenClaw AI Refactor System</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+.diff-add { background:#e6ffed;color:#22863a; }
+.diff-del { background:#ffeef0;color:#cb2431; }
+.blink { animation: blink 1s infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+</style>
 </head>
 
 <body class="bg-gray-100">
 
 <div class="flex h-screen">
 
-  <!-- 侧边栏 -->
-  <div class="w-64 bg-black text-white p-4">
-    <h2 class="text-xl font-bold mb-6">OpenClaw</h2>
-    <ul>
-      <li class="mb-3 cursor-pointer" onclick="showPage('dashboard')">📊 首页</li>
-      <li class="mb-3 cursor-pointer" onclick="showPage('logs')">🧠 日志</li>
-      <li class="mb-3 cursor-pointer" onclick="showPage('pr')">📄 项目中心</li>
-      <li class="mb-3 cursor-pointer" onclick="showPage('settings')">⚙️ 设置</li>
-    </ul>
+<!-- Sidebar -->
+<div class="w-64 bg-black text-white p-4">
+  <h2 class="text-xl font-bold mb-6">OpenClaw AI</h2>
+  <ul>
+    <li onclick="showPage('dashboard')" class="mb-3 cursor-pointer">📊 Dashboard</li>
+    <li onclick="showPage('ai')" class="mb-3 cursor-pointer">🧠 AI Engine</li>
+    <li onclick="showPage('diff')" class="mb-3 cursor-pointer">🔍 PR Diff</li>
+  </ul>
+</div>
+
+<!-- Main -->
+<div class="flex-1 p-6">
+
+<!-- Dashboard -->
+<div id="dashboard">
+<h1 class="text-2xl font-bold mb-4">🚀 系统总览</h1>
+
+<div class="grid grid-cols-4 gap-4 mb-6">
+  <div class="bg-white p-4 rounded shadow">
+    Token<br><b id="token">5,000,000</b>
   </div>
-
-  <!-- 主区域 -->
-  <div class="flex-1 p-6 overflow-auto">
-
-    <!-- Dashboard -->
-    <div id="dashboard">
-      <h1 class="text-2xl font-bold mb-4">🚀 首页</h1>
-
-      <div class="grid grid-cols-4 gap-4 mb-6">
-        <div class="bg-white p-4 rounded shadow">Token<br><b>5,000,000</b></div>
-        <div class="bg-white p-4 rounded shadow">扫描文件<br><b>152,342</b></div>
-        <div class="bg-white p-4 rounded shadow">PR<br><b>12/天</b></div>
-        <div class="bg-white p-4 rounded shadow text-green-600">+80%</div>
-      </div>
-
-      <div class="grid grid-cols-2 gap-6">
-        <div class="bg-white p-4 rounded shadow">
-          <canvas id="lineChart"></canvas>
-        </div>
-        <div class="bg-white p-4 rounded shadow">
-          <canvas id="pieChart"></canvas>
-        </div>
-      </div>
-    </div>
-
-    <!-- Logs -->
-    <div id="logs" class="hidden">
-      <h1 class="text-2xl font-bold mb-4">🧠 Agent Logs</h1>
-      <div class="bg-black text-green-400 p-4 h-64 overflow-auto font-mono" id="logBox"></div>
-    </div>
-
-    <!-- PR Center -->
-    <div id="pr" class="hidden">
-      <h1 class="text-2xl font-bold mb-4">📄 PR Center</h1>
-
-      <div class="bg-white p-4 rounded shadow mb-3">
-        ✔ Refactor service layer | 状态：Merged | 2 mins ago
-      </div>
-      <div class="bg-white p-4 rounded shadow mb-3">
-        ✔ Fix naming convention | 状态：Merged | 5 mins ago
-      </div>
-      <div class="bg-white p-4 rounded shadow mb-3">
-        ⏳ Optimize query performance | 状态：Running
-      </div>
-    </div>
-
-    <!-- Settings -->
-    <div id="settings" class="hidden">
-      <h1 class="text-2xl font-bold mb-4">⚙️ Settings</h1>
-      <div class="bg-white p-4 rounded shadow">
-        Agent Version: v1.3.2<br>
-        Mode: Auto Refactor<br>
-        Status: <span class="text-green-600">Active</span>
-      </div>
-    </div>
-
+  <div class="bg-white p-4 rounded shadow">
+    扫描文件<br><b id="files">152,342</b>
+  </div>
+  <div class="bg-white p-4 rounded shadow">
+    PR 数量<br><b id="prCount">12</b>
+  </div>
+  <div class="bg-white p-4 rounded shadow text-green-600">
+    成功率<br><b>100%</b>
   </div>
 </div>
 
+<button onclick="startDemo()" class="bg-black text-white px-4 py-2 rounded">
+▶ 开始自动重构演示
+</button>
+
+</div>
+
+<!-- AI Engine -->
+<div id="ai" class="hidden">
+<h1 class="text-2xl font-bold mb-4">🧠 AI 正在分析代码</h1>
+
+<div class="bg-black text-green-400 p-4 font-mono h-64" id="aiLog">
+<span class="blink">▋</span>
+</div>
+</div>
+
+<!-- Diff -->
+<div id="diff" class="hidden">
+<h1 class="text-2xl font-bold mb-4">🔍 自动生成 PR Diff</h1>
+
+<div class="bg-white p-4 rounded shadow font-mono text-sm" id="diffBox"></div>
+
+<div class="mt-4 text-green-600 font-semibold" id="diffExplain"></div>
+</div>
+
+</div>
+</div>
+
 <script>
+
 // 页面切换
-function showPage(page) {
-  ['dashboard','logs','pr','settings'].forEach(id=>{
+function showPage(p){
+  ['dashboard','ai','diff'].forEach(id=>{
     document.getElementById(id).classList.add('hidden');
   });
-  document.getElementById(page).classList.remove('hidden');
+  document.getElementById(p).classList.remove('hidden');
 }
 
-// 日志流
-const logs = [
-  "Agent Started...",
-  "Scanning repo...",
-  "Issues found: 342",
-  "Generating PR...",
-  "Running tests...",
-  "All tests passed ✔"
+// AI日志流
+const aiSteps = [
+"加载代码仓库...",
+"扫描文件结构...",
+"检测代码异味...",
+"发现 SQL 拼接风险...",
+"分析优化方案...",
+"生成重构代码..."
 ];
 
-let i=0;
-function streamLogs(){
-  if(i<logs.length){
-    document.getElementById("logBox").innerHTML += logs[i]+"<br>";
-    i++;
-    setTimeout(streamLogs,700);
+let step = 0;
+
+function runAI(){
+  if(step < aiSteps.length){
+    document.getElementById("aiLog").innerHTML += aiSteps[step] + "<br>";
+    step++;
+    setTimeout(runAI, 800);
+  } else {
+    setTimeout(showDiff, 1000);
   }
 }
-streamLogs();
 
-// 图表
-new Chart(document.getElementById('lineChart'), {
-  type:'line',
-  data:{
-    labels:['Mon','Tue','Wed','Thu','Fri'],
-    datasets:[{data:[200,400,800,1200,2000]}]
-  }
-});
+// Diff逐行生成
+const diffLines = [
+'- return db.query("SELECT name FROM user WHERE id="+id);',
+'+ String sql = "SELECT name FROM user WHERE id = ?";',
+'+ return db.queryPrepared(sql, id);'
+];
 
-new Chart(document.getElementById('pieChart'), {
-  type:'pie',
-  data:{
-    labels:['规范','性能','架构','安全'],
-    datasets:[{data:[40,30,20,10]}]
+let d = 0;
+
+function showDiff(){
+  showPage('diff');
+  function addLine(){
+    if(d < diffLines.length){
+      let line = diffLines[d];
+      let div = document.createElement("div");
+      div.className = line.startsWith('+') ? 'diff-add' : 'diff-del';
+      div.innerText = line;
+      document.getElementById("diffBox").appendChild(div);
+      d++;
+      setTimeout(addLine, 700);
+    } else {
+      document.getElementById("diffExplain").innerText =
+        "✔ AI自动修复 SQL 注入风险，使用参数化查询";
+      increaseMetrics();
+    }
   }
-});
+  addLine();
+}
+
+// 数据增长动画
+function increaseMetrics(){
+  let pr = document.getElementById("prCount");
+  let count = parseInt(pr.innerText);
+  let i = 0;
+  let timer = setInterval(()=>{
+    pr.innerText = count + i;
+    i++;
+    if(i>3) clearInterval(timer);
+  },300);
+}
+
+// 一键启动
+function startDemo(){
+  showPage('ai');
+  document.getElementById("aiLog").innerHTML="";
+  step=0;
+  d=0;
+  runAI();
+}
+
 </script>
 
 </body>
